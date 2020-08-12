@@ -97,7 +97,7 @@ const runAction = () => {
 	if (platform === "mac") {
 		setEnv("CSC_LINK", getInput("mac_certs"));
 		setEnv("CSC_KEY_PASSWORD", getInput("mac_certs_password"));
-	} else if (platform === "windows") {
+	} else {
 		setEnv("CSC_LINK", getInput("windows_certs"));
 		setEnv("CSC_KEY_PASSWORD", getInput("windows_certs_password"));
 	}
@@ -127,10 +127,11 @@ const runAction = () => {
 
 	log(`Building${release ? " and releasing" : ""} the Electron app…`);
 	const cmd = useVueCli ? "vue-cli-service electron:build" : "electron-builder";
+	const flags = platform === 'mac' ? '-m' : '-wl';
 	for (let i = 0; i < maxAttempts; i += 1) {
 		try {
 			run(
-				`${useNpm ? "npx --no-install" : "yarn run"} ${cmd} --${platform} ${
+				`${useNpm ? "npx --no-install" : "yarn run"} ${cmd} ${flags} ${
 					release ? "--publish always" : ""
 				} ${args}`,
 				appRoot,
