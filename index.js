@@ -94,13 +94,11 @@ const runAction = () => {
 
 	// Require code signing certificate and password if building for macOS. Export them to environment
 	// variables (required by `electron-builder`)
-	if (platform === "mac") {
+	
 		setEnv("CSC_LINK", getInput("mac_certs"));
 		setEnv("CSC_KEY_PASSWORD", getInput("mac_certs_password"));
-	} else {
-		setEnv("CSC_LINK", getInput("windows_certs"));
-		setEnv("CSC_KEY_PASSWORD", getInput("windows_certs_password"));
-	}
+		setEnv("WIN_CSC_LINK", getInput("windows_certs"));
+		setEnv("WIN_CSC_KEY_PASSWORD", getInput("windows_certs_password"));
 
 	// Disable console advertisements during install phase
 	setEnv("ADBLOCK", true);
@@ -127,7 +125,7 @@ const runAction = () => {
 
 	log(`Building${release ? " and releasing" : ""} the Electron app…`);
 	const cmd = useVueCli ? "vue-cli-service electron:build" : "electron-builder";
-	const flags = platform === 'mac' ? '-m' : '-wl';
+	const flags = platform === 'mac' ? '-mwl' : `--${platform}`;
 	for (let i = 0; i < maxAttempts; i += 1) {
 		try {
 			run(
